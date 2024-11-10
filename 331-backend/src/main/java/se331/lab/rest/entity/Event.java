@@ -15,4 +15,6 @@ public class Event {
     String time;
     Boolean petAllowed;
     String organizer;
+
+
 }
