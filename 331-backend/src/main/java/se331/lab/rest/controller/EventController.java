@@ -1,12 +1,11 @@
 package se331.lab.rest.controller;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import se331.lab.rest.service.EventService;
 import se331.lab.rest.entity.Event;
@@ -96,19 +95,13 @@ public class EventController {
 //        page = page == null ? 1 : page;
 //        Integer firstIndex = (page - 1) * perPage;
 //        List<Event> output = new ArrayList<>();
-        List<Event> output = null;
-        Integer eventSize = eventService.getEventSize();
+        Page<Event> pageOutput = eventService.getEvents(perPage, page);
         HttpHeaders responseHeader = new HttpHeaders();
-        responseHeader.set("x-total-count", String.valueOf(eventSize));
-        try {
-//            for (int i = firstIndex; i < firstIndex + perPage; i++) {
-//                output.add(eventList.get(i));
-//            }
-        output = eventService.getEvents(perPage, page);
-            return new ResponseEntity<>(output,responseHeader,HttpStatus.OK);
-        } catch (IndexOutOfBoundsException ex) {
-            return new ResponseEntity<>(output,responseHeader,HttpStatus.OK);
-        }
+        responseHeader.set("x-total-count",
+                String.valueOf(pageOutput.getTotalElements()));
+         return new
+                ResponseEntity<>(pageOutput.getContent(),responseHeader,HttpStatus.OK);
+
     }
     @GetMapping("events/{id}")
  public ResponseEntity<?> getEvent(@PathVariable("id") Long id) {
@@ -126,5 +119,11 @@ public class EventController {
              }else {
              throw new ResponseStatusException(HttpStatus.NOT_FOUND,"The given id is not found");
                      }
+         }
+
+@PostMapping("/events")
+public ResponseEntity<?> addEvent(@RequestBody Event event){
+         Event output = eventService.save(event);
+         return ResponseEntity.ok(output);
          }
 }

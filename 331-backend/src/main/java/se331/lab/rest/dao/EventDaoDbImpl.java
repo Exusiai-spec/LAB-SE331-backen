@@ -22,17 +22,15 @@ public Integer getEventSize() {
          }
 @Override
 public Page<Event> getEvents(Integer pageSize, Integer page) {
-         List<Event> events = eventRepository.findAll();
-         pageSize = pageSize == null ? events.size() : pageSize;
-         page = page == null ? 1 : page;
-         int firstIndex = (page - 1) * pageSize;
-         List<Event> output = events.subList(firstIndex, firstIndex + pageSize);
-    return new
-            PageImpl<Event>(eventList.subList(firstIndex,firstIndex+pageSize), PageRequest.of(page,
-            pageSize),eventList.size());
+         return eventRepository.findAll(PageRequest.of(page - 1, pageSize));
          }
 @Override
 public Event getEvent(Long id) {
         return eventRepository.findById(id).orElse(null);
+         }
+
+@Override
+public Event save(Event event) {
+         return eventRepository.save(event);
          }
 }
