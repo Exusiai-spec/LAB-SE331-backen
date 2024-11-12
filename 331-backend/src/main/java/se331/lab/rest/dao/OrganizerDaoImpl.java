@@ -1,6 +1,10 @@
 package se331.lab.rest.dao;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.data.domain.Page;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import se331.lab.rest.entity.Organizer;
 
@@ -9,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
+@Profile("manual")
 public class OrganizerDaoImpl implements OrganizerDao {
     List<Organizer> organizerList;
 
@@ -53,7 +58,7 @@ public class OrganizerDaoImpl implements OrganizerDao {
     }
 
     @Override
-    public List<Organizer> getOrganizers(Integer pageSize, Integer page) {
+    public Page<Organizer> getOrganizers(Integer pageSize, Integer page) {
         pageSize = pageSize == null ? organizerList.size() : pageSize;
         page = page == null ? 1 : page;
         int firstIndex = (page - 1) * pageSize;
@@ -64,7 +69,10 @@ public class OrganizerDaoImpl implements OrganizerDao {
                 .sorted((o1, o2) -> Long.compare(o1.getId(), o2.getId()))
                 .collect(Collectors.toList());
 
-        return sortedOrganizers.subList(firstIndex, lastIndex);
+//        return sortedOrganizers.subList(firstIndex, lastIndex);
+        return new
+                PageImpl<Organizer>(organizerList.subList(firstIndex, lastIndex), PageRequest.of(page,
+                pageSize),organizerList.size());
     }
 
     @Override
@@ -74,4 +82,10 @@ public class OrganizerDaoImpl implements OrganizerDao {
                 .findFirst()
                 .orElse(null);
     }
+@Override
+public Organizer save(Organizer organizer) {
+         organizer.setId(organizerList.get(organizerList.size()-1).getId()+1);
+         organizerList.add(organizer);
+         return organizer;
+         }
 }
