@@ -1,21 +1,24 @@
 package se331.lab.rest.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
+import java.util.List;
 @Data
 @Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class Organizer {
- @Id
- @GeneratedValue(strategy = GenerationType.IDENTITY)
- @EqualsAndHashCode.Exclude
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Exclude
     Long id;
     String name;
-    String address;
+    @OneToMany(mappedBy = "organizer")
+    List<Event> ownEvents;
 }
